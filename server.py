@@ -2,10 +2,15 @@ from flask import Flask, send_from_directory, request, jsonify
 
 from functools import wraps
 
+from werkzeug.security import check_password_hash
+import jwt
+import datetime
+
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
+app.config['SECRET_KEY'] = 'SAMPLE_KEY'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///accesscontrol.db'
 db = SQLAlchemy(app)
 
@@ -48,7 +53,26 @@ def index():
 
 @app.route("/robots.txt")
 def robots():
-    return send_from_directory("static", "robots.txt")
+  return send_from_directory("static", "robots.txt")
+
+@app.route('/login')
+def login():
+  auth = request.authorization
+
+  if not auth or not auth.username or not auth.password:
+    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+
+  user = User.query.filter_by(name=auth.username).first()
+
+  if not user:
+    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+
+  if check_password_hash(user.password, auth.password):
+    token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=99999)}, app.config['SECRET_KEY'], algorithm='HS256')
+
+    return jsonify({'token': token})
+
+  return make_response('Could not verify. This attempt has been logged. All browser- and userdata has been stored.', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 if __name__ == '__main__':
 	app.run(debug=True)
