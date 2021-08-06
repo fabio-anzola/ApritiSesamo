@@ -85,5 +85,17 @@ def whoami(current_user=User(name='anonymous')):
       'uuid': current_user.public_id
     })
 
+@app.route('/door/trigger', methods=['GET'])
+@token_required
+def trigger(current_user):
+  if current_user.admin:
+    return jsonify({'message': 'Admin cannot perform this action'}), 403
+
+  # do stuff
+
+  return jsonify({
+    'message': "Door has been toggled"
+  })
+
 if __name__ == '__main__':
 	app.run(debug=True)
