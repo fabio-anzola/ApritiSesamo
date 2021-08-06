@@ -2,7 +2,11 @@ from flask import Flask, send_from_directory, request, jsonify
 
 from functools import wraps
 
+from flask_sqlalchemy import SQLAlchemy
+
 app = Flask(__name__)
+
+db = SQLAlchemy(app)
 
 class User(db.Model):
   id = db.Column(db.Integer, primary_key=True)
