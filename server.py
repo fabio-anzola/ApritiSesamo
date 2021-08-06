@@ -74,5 +74,16 @@ def login():
 
   return jsonify({'message':'Could not verify. This attempt has been logged. All browser- and userdata has been stored.'}), 401
 
+@app.route('/whoami')
+@token_required
+def whoami(current_user=User(name='anonymous')):
+  if current_user.name == 'anonymous':
+    return jsonify({'user': 'anonymous'})
+  else:
+    return jsonify({
+      'user': current_user.name,
+      'uuid': current_user.public_id
+    })
+
 if __name__ == '__main__':
 	app.run(debug=True)
