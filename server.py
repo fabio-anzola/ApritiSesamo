@@ -60,19 +60,19 @@ def login():
   auth = request.authorization
 
   if not auth or not auth.username or not auth.password:
-    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+    return jsonify({'message':'Could not verify'}), 401
 
   user = User.query.filter_by(name=auth.username).first()
 
   if not user:
-    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+    return jsonify({'message':'Could not verify'}), 401
 
   if check_password_hash(user.password, auth.password):
     token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=99999)}, app.config['SECRET_KEY'], algorithm='HS256')
 
     return jsonify({'token': token})
 
-  return make_response('Could not verify. This attempt has been logged. All browser- and userdata has been stored.', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+  return jsonify({'message':'Could not verify. This attempt has been logged. All browser- and userdata has been stored.'}), 401
 
 if __name__ == '__main__':
 	app.run(debug=True)
