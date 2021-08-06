@@ -240,3 +240,6 @@ Temporary Items
 # Cython debug symbols
 
 # End of https://www.toptal.com/developers/gitignore/api/python,macos,flask
+
+# Python virtualenv bin
+bin/
