@@ -280,7 +280,36 @@ def promote_user(current_user, public_id):
 
   db.session.commit()
 
-  return jsonify({'message': 'Users rank has been changed'})
+@app.route('/user/<public_id>', methods=['PATCH'])
+@token_required
+def change_user_pass(current_user, public_id):
+  auth = request.authorization
+
+  if not auth or not auth.username or not auth.password:
+    return jsonify({'message':'Could not verify'}), 401
+
+
+  user = User.query.filter_by(name=auth.username).first()
+
+  if not user:
+    return jsonify({'message':'Could not verify'}), 401
+
+
+  if check_password_hash(user.password, auth.password):
+    data = request.get_json()
+
+    if not data:
+      return jsonify({'message': 'Missing input'}), 403
+    if not data['password']:
+      return jsonify({'message': 'Wrong input'}), 403
+
+    hashed_password = generate_password_hash(data['password'], method='sha256')
+    user.password = hashed_password
+
+    db.session.commit()
+    return jsonify({'message': 'Password has been changed'})
+
+  return jsonify({'message':'Could not verify. This attempt has been logged. All browser- and userdata has been stored.'}), 401
 
 if __name__ == '__main__':
 	app.run(debug=True)
