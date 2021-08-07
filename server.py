@@ -4,9 +4,10 @@ from flask import Flask, send_from_directory, request, jsonify
 
 from functools import wraps
 
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 import jwt
 import datetime
+import uuid
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -173,6 +174,27 @@ def set_error():
     ready_led.off()
     wait_led.off()
     error_led.on()
+
+@app.route('/user', methods=['POST'])
+@token_required
+def create_user(current_user):
+  if not current_user.admin:
+    return jsonify({'message': 'You are unable to perform this action'}), 403
+
+  data = request.get_json()
+
+  if not data:
+    return jsonify({'message': 'Missing input'}), 403
+  if not data['name'] or not data['password']:
+    return jsonify({'message': 'Wrong input'}), 403
+
+  hashed_password = generate_password_hash(data['password'], method='sha256')
+
+  new_user = User(public_id=str(uuid.uuid4()), name=data['name'], password=hashed_password, admin=False)
+  db.session.add(new_user)
+  db.session.commit()
+
+  return jsonify({'message': 'User created'})
 
 if os.environ['ENIRONMENT'] != 'dev':
   set_ready()
