@@ -92,7 +92,7 @@ def login():
     return jsonify({'message':'Could not verify'}), 401
 
   if check_password_hash(user.password, auth.password):
-    token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=99999)}, app.config['SECRET_KEY'], algorithm='HS256')
+    token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=int(os.environ['JWT_TIME']))}, app.config['SECRET_KEY'], algorithm='HS256')
 
     return jsonify({'token': token})
 
