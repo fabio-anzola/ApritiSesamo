@@ -196,6 +196,22 @@ def create_user(current_user):
 
   return jsonify({'message': 'User created'})
 
+@app.route('/user/<public_id>', methods=['DELETE'])
+@token_required
+def delete_user(current_user, public_id):
+  if not current_user.admin:
+    return jsonify({'message': 'You are unable to perform this action'}), 403
+
+  user = User.query.filter_by(public_id=public_id).first()
+
+  if not user:
+    return jsonify({'message': 'User not found'})
+
+  db.session.delete(user)
+  db.session.commit()
+
+  return jsonify({'message': 'User has been deleted'})
+
 if os.environ['ENIRONMENT'] != 'dev':
   set_ready()
 
