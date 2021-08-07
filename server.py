@@ -66,9 +66,13 @@ def token_required(f):
   return decorated
 
 @app.route('/')
-@token_required
-def index():
-	return 'Hello, Flask!'
+def hello_world():
+    hashing = datetime.date.today().isoformat() + 'Hello World'
+    return jsonify({
+        'message': 'Hello World',
+        'date': datetime.date.today().isoformat(),
+        'shasum256': str(hashlib.sha256(hashing.encode('utf-8')).hexdigest())
+    }), 418
 
 @app.route("/robots.txt")
 def robots():
@@ -259,7 +263,7 @@ def get_one_user(current_user, public_id):
 def promote_user(current_user, public_id):
   if not current_user.admin:
     return jsonify({'message': 'You are unable to perform this action'}), 403
-    
+
   if public_id == User.query.filter_by(name='admin').first().public_id:
     return jsonify({'message': 'Admin cannot be demoted'}), 403
 
