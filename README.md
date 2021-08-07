@@ -73,7 +73,7 @@ sudo chmod +x run.sh
 ./run.sh
 ```
 
-Default login credentials are: (Please make shure to change the password)
+Default login credentials are: (Please make sure to change the password)
 ```
 admin
 passw0rd
