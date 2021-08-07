@@ -137,5 +137,33 @@ def doorstatus(current_user):
       'sensor_reading': (distance_sensor.distance * 100)
     })
 
+def set_ready():
+    """
+    Sets ready led
+    """
+    ready_led.on()
+    wait_led.off()
+    error_led.off()
+    sleep(1)
+    ready_led.off()
+
+
+def set_wait():
+    """
+    Sets wait led
+    """
+    ready_led.off()
+    wait_led.on()
+    error_led.off()
+
+
+def set_error():
+    """
+    Sets error led
+    """
+    ready_led.off()
+    wait_led.off()
+    error_led.on()
+
 if __name__ == '__main__':
 	app.run(debug=True)
