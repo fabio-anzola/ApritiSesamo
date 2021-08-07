@@ -24,6 +24,13 @@ app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 db = SQLAlchemy(app)
 
+relay = LED(18)
+ready_led = LED(21)
+wait_led = LED(20)
+error_led = LED(16)
+distance_sensor = DistanceSensor(echo=23, trigger=24)
+env_sensor = LineSensor(12)
+
 class User(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   public_id = db.Column(db.String(50), unique=True)
