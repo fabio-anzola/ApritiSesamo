@@ -174,5 +174,8 @@ def set_error():
     wait_led.off()
     error_led.on()
 
+if os.environ['ENIRONMENT'] != 'dev':
+  set_ready()
+
 if __name__ == '__main__':
 	app.run(debug=True)
