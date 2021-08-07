@@ -235,5 +235,47 @@ def get_all_users(current_user):
 
   return jsonify({'users': output})
 
+@app.route('/user/<public_id>', methods=['GET'])
+@token_required
+def get_one_user(current_user, public_id):
+  if not current_user.admin:
+    return jsonify({'message': 'You are unable to perform this action'}), 403
+
+  user = User.query.filter_by(public_id=public_id).first()
+
+  if not user:
+    return jsonify({'message': 'No user found!'})
+
+  user_data = {}
+  user_data['admin'] = user.admin
+  user_data['password'] = user.password
+  user_data['name'] = user.name
+  user_data['public_id'] = user.public_id
+
+  return jsonify({'user': user_data})
+
+@app.route('/user/<public_id>', methods=['PUT'])
+@token_required
+def promote_user(current_user, public_id):
+  if not current_user.admin:
+    return jsonify({'message': 'You are unable to perform this action'}), 403
+    
+  if public_id == User.query.filter_by(name='admin').first().public_id:
+    return jsonify({'message': 'Admin cannot be demoted'}), 403
+
+  user = User.query.filter_by(public_id=public_id).first()
+
+  if not user:
+    return jsonify({'message': 'User not found'})
+
+  if user.admin:
+    user.admin = False
+  else:
+    user.admin = True
+
+  db.session.commit()
+
+  return jsonify({'message': 'Users rank has been changed'})
+
 if __name__ == '__main__':
 	app.run(debug=True)
