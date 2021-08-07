@@ -12,6 +12,10 @@ from flask_sqlalchemy import SQLAlchemy
 
 from dotenv import load_dotenv
 
+from gpiozero import LED
+from gpiozero import DistanceSensor
+from gpiozero import LineSensor
+
 load_dotenv()
 
 app = Flask(__name__)
