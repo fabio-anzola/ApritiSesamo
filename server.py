@@ -215,5 +215,25 @@ def delete_user(current_user, public_id):
 if os.environ['ENIRONMENT'] != 'dev':
   set_ready()
 
+@app.route('/user', methods=['GET'])
+@token_required
+def get_all_users(current_user):
+  if not current_user.admin:
+    return jsonify({'message': 'You are unable to perform this action'}), 403
+
+  users = User.query.all()
+
+  output = []
+
+  for user in users:
+    user_data = {}
+    user_data['admin'] = user.admin
+    user_data['password'] = user.password
+    user_data['name'] = user.name
+    user_data['public_id'] = user.public_id
+    output.append(user_data)
+
+  return jsonify({'users': output})
+
 if __name__ == '__main__':
 	app.run(debug=True)
