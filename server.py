@@ -115,6 +115,10 @@ def trigger(current_user):
     sleep(1)
     relay.off()
     set_ready()
+  else:
+    return jsonify({
+    'message': "dev-enabled"
+    })
 
   return jsonify({
     'message': "Door has been toggled"
