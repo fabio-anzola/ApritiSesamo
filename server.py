@@ -24,12 +24,13 @@ app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 db = SQLAlchemy(app)
 
-relay = LED(18)
-ready_led = LED(21)
-wait_led = LED(20)
-error_led = LED(16)
-distance_sensor = DistanceSensor(echo=23, trigger=24)
-env_sensor = LineSensor(12)
+if os.environ['ENIRONMENT'] != 'dev':
+  relay = LED(18)
+  ready_led = LED(21)
+  wait_led = LED(20)
+  error_led = LED(16)
+  distance_sensor = DistanceSensor(echo=23, trigger=24)
+  env_sensor = LineSensor(12)
 
 class User(db.Model):
   id = db.Column(db.Integer, primary_key=True)
@@ -113,6 +114,28 @@ def trigger(current_user):
   return jsonify({
     'message': "Door has been toggled"
   })
+
+@app.route('/door/status', methods=['GET'])
+@token_required
+def doorstatus(current_user):
+  if current_user.admin:
+    return jsonify({'message': 'Admin cannot perform this action'}), 403
+
+  if os.environ['ENIRONMENT'] == 'dev':
+    return jsonify({
+      'status': 'dev-enabled',
+      'sensor_reading': (100)
+    })
+  elif (distance_sensor.distance * 100) < 15.0:
+    return jsonify({
+      'status': 'open',
+      'sensor_reading': (distance_sensor.distance * 100)
+    })
+  else:
+    return jsonify({
+      'status': 'closed',
+      'sensor_reading': (distance_sensor.distance * 100)
+    })
 
 if __name__ == '__main__':
 	app.run(debug=True)
