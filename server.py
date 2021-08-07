@@ -141,7 +141,7 @@ def doorstatus(current_user):
       'status': 'dev-enabled',
       'sensor_reading': (100)
     })
-  elif (distance_sensor.distance * 100) < 15.0:
+  elif (distance_sensor.distance * 100) < int(os.environ['SENSOR_THRESHOLD']):
     return jsonify({
       'status': 'open',
       'sensor_reading': (distance_sensor.distance * 100)
