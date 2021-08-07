@@ -109,7 +109,12 @@ def trigger(current_user):
   if current_user.admin:
     return jsonify({'message': 'Admin cannot perform this action'}), 403
 
-  # do stuff
+  if os.environ['ENIRONMENT'] != 'dev':
+    set_wait()
+    relay.on()
+    sleep(1)
+    relay.off()
+    set_ready()
 
   return jsonify({
     'message': "Door has been toggled"
