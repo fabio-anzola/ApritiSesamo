@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, send_from_directory, request, jsonify
 
 from functools import wraps
@@ -8,10 +10,14 @@ import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'SAMPLE_KEY'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///accesscontrol.db'
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 db = SQLAlchemy(app)
 
 class User(db.Model):
