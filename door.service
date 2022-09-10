@@ -1,0 +1,14 @@
+[Unit]
+Description=ApritiSesamo
+After=network-online.target
+ 
+[Service]
+ExecStart=/bin/bash run.sh
+WorkingDirectory=/home/pi/ApritiSesamo/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+ 
+[Install]
+WantedBy=multi-user.target

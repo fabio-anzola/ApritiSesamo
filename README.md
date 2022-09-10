@@ -69,6 +69,9 @@ pip3 install -r requirements.txt
 
 Start the server:
 ```sh
+sudo cp /home/pi/ApritiSesamo/door.service /lib/systemd/system/
+sudo systemctl start door.service
+sudo systemctl enable door.service
 sudo chmod +x run.sh
 ./run.sh
 ```
